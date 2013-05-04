@@ -1,7 +1,7 @@
 import zmq
 
-def main(host, xrep_port, xreq_port):
-"""ZMQ device to enqueue/dequeue messages"""
+def run_device(host, xrep_port, xreq_port):
+    """ZMQ device to enqueue/dequeue messages"""
     try:
         context = zmq.Context()
         # Socket facing clients
@@ -22,6 +22,6 @@ def main(host, xrep_port, xreq_port):
 
 if __name__ == "__main__":
     host = "127.0.0.1"
-    xrep_port = 5999
-    xreq_port = 5960
+    xrep_port = 5559
+    xreq_port = 5560
     run_device(host, xrep_port, xreq_port)
