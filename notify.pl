@@ -20,8 +20,11 @@ $VERSION = "0.5";
     url         => 'http://code.google.com/p/irssi-libnotify',
 );
 
-my $address = "127.0.0.1";
-my $port = "5559";
+Irssi::settings_add_str('notify_mq', 'notify_remote_port', '');
+Irssi::settings_add_str('notify_mq', 'notify_remote_host', '');
+
+my $address = Irssi::settings_get_str('notify_remote_host');
+my $port = Irssi::settings_get_str('notify_remote_port');
 
 sub sanitize {
   my ($text) = @_;

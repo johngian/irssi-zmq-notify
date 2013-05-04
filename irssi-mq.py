@@ -1,4 +1,15 @@
 import zmq
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("host", type=str,
+                    help="Pub server address")
+parser.add_argument("xrep_port", type=int,
+                    help="Frontend server port")
+parser.add_argument("xreq_port", type=int,
+                    help="Backend server port")
+args = parser.parse_args()
+
 
 def run_device(host, xrep_port, xreq_port):
     """ZMQ device to enqueue/dequeue messages"""
@@ -21,7 +32,4 @@ def run_device(host, xrep_port, xreq_port):
         context.term()
 
 if __name__ == "__main__":
-    host = "127.0.0.1"
-    xrep_port = 5559
-    xreq_port = 5560
-    run_device(host, xrep_port, xreq_port)
+    run_device(args.host, args.xrep_port, args.xreq_port)

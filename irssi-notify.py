@@ -10,6 +10,7 @@ parser.add_argument("port", type=int,
                     help="Pub server port")
 args = parser.parse_args()
 
+
 def send_message(socket, msg):
     socket.send(msg)
 
