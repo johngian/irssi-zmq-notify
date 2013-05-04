@@ -18,6 +18,4 @@ if __name__ == "__main__":
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://%s:%d" % (args.address, args.port))
     send_message(socket, args.msg)
-    print "Sending request", args.msg
     reply = socket.recv()
-    print "Received reply", reply
