@@ -46,7 +46,7 @@ sub notify {
     $message = sanitize($message);
 
     my $cmd = "EXEC - " .
-	"python ~/irssi-notify.py " .
+	"irssi-notify " .
 	"'" . $summary . " " . $message . "'" . " " . $address . " " . $port;
     $server->command($cmd);
 }
