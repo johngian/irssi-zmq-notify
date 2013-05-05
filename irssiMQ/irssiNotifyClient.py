@@ -1,8 +1,10 @@
 import argparse
 import zmq
 
+
 def send_message(socket, msg):
     socket.send(msg)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -19,7 +21,6 @@ def main():
     socket.connect("tcp://%s:%d" % (args.address, args.port))
     send_message(socket, args.msg)
     socket.recv()
-    
+
 if __name__ == "__main__":
     main()
-
