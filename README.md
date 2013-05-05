@@ -16,17 +16,23 @@ Dependencies:
 Installation:
 -------------
 Run:
+```
     python setup.py build
     python setup.py install
-
+```
 Copy the modified notify.pl on irssi scripts folder and run:
+```
     /load perl
     /script load notify.pl
-
+```
 How to use:
 -----------
 Initialize the ZeroMQ device:
-    nohup ./irssi-mq.py
+```   
+    nohup irssi-mq &
+```
 
 Run on your local machine the notifications server:
-    nohup ./irssi-notify-server.py
+```   
+    nohup irssi-notify-server &
+```
