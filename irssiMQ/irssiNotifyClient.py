@@ -20,7 +20,9 @@ def main():
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://%s:%d" % (args.address, args.port))
     send_message(socket, args.msg)
-    socket.recv()
+    print args.msg
+    response = socket.recv()
+    print response
 
 if __name__ == "__main__":
     main()

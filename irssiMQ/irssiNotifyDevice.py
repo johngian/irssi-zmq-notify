@@ -7,7 +7,7 @@ import Queue
 class Reader(threading.Thread):
 
     def __init__(self, queue, socket):
-        super(Reader, self).__init__(self)
+        threading.Thread.__init__(self)
         self.queue = queue
         self.socket = socket
 
@@ -16,6 +16,7 @@ class Reader(threading.Thread):
 
         while True:
             msg = self.socket.recv()
+            print "Message:", msg
             self.socket.send("ACK")
             self.queue.put(msg)
 
@@ -23,7 +24,7 @@ class Reader(threading.Thread):
 class Writer(threading.Thread):
 
     def __init__(self, queue, socket):
-        super(Writer, self).__init__(self)
+        threading.Thread.__init__(self)
         self.queue = queue
         self.socket = socket
 
@@ -32,6 +33,8 @@ class Writer(threading.Thread):
 
         while True:
             msg = self.queue.get()
+            print msg
+
             self.socket.send(msg)
             self.socket.recv()
 
@@ -58,19 +61,22 @@ def main():
         xrep_port = args.xrep_port
         xreq_port = args.xreq_port
         # Socket facing clients
-        frontend = context.socket(zmq.XREP)
+        frontend = context.socket(zmq.REP)
         frontend.bind("tcp://%s:%d" % (host, xrep_port))
+
         # Socket facing services
-        backend = context.socket(zmq.XREQ)
+        backend = context.socket(zmq.REQ)
         backend.bind("tcp://%s:%d" % (host, xreq_port))
 
         reader = Reader(msg_queue, frontend)
-        reader.setDaemon(True)
         reader.start()
-
+        
         writer = Writer(msg_queue, backend)
-        writer.setDaemon(True)
         writer.start()
+
+        while True:
+            continue
+
 
     except Exception, e:
         print e
