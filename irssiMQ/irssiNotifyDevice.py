@@ -1,5 +1,39 @@
-import zmq
 import argparse
+import threading
+import zmq
+import Queue
+
+
+class Reader(threading.Thread):
+
+    def __init__(self, queue, socket):
+        super(Reader, self).__init__(self)
+        self.queue = queue
+        self.socket = socket
+
+    def run(self):
+        """Recv messages from frontend."""
+
+        while True:
+            msg = self.socket.recv()
+            self.socket.send("ACK")
+            self.queue.put(msg)
+
+
+class Writer(threading.Thread):
+
+    def __init__(self, queue, socket):
+        super(Writer, self).__init__(self)
+        self.queue = queue
+        self.socket = socket
+
+    def run(self):
+        """Send messages to backend."""
+
+        while True:
+            msg = self.queue.get()
+            self.socket.send(msg)
+            self.socket.recv()
 
 
 def main():
@@ -16,6 +50,8 @@ def main():
 
     args = parser.parse_args()
 
+    msg_queue = Queue.Queue()
+
     try:
         context = zmq.Context()
         host = args.host
@@ -27,12 +63,19 @@ def main():
         # Socket facing services
         backend = context.socket(zmq.XREQ)
         backend.bind("tcp://%s:%d" % (host, xreq_port))
-        zmq.device(zmq.QUEUE, frontend, backend)
+
+        reader = Reader(msg_queue, frontend)
+        reader.setDaemon(True)
+        reader.start()
+
+        writer = Writer(msg_queue, backend)
+        writer.setDaemon(True)
+        writer.start()
+
     except Exception, e:
         print e
         print "Bringing down ZMQ device..."
     finally:
-        pass
         frontend.close()
         backend.close()
         context.term()
