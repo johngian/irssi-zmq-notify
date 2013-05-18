@@ -44,7 +44,9 @@ def main():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("host", type=str,
+    parser.add_argument("frontend_host", type=str,
+                        help="Local server address")
+    parser.add_argument("backend_host", type=str,
                         help="Pub server address")
     parser.add_argument("xrep_port", type=int,
                         help="Frontend server port")
@@ -57,16 +59,15 @@ def main():
 
     try:
         context = zmq.Context()
-        host = args.host
         xrep_port = args.xrep_port
         xreq_port = args.xreq_port
         # Socket facing clients
         frontend = context.socket(zmq.REP)
-        frontend.bind("tcp://%s:%d" % (host, xrep_port))
+        frontend.bind("tcp://%s:%d" % (args.frontend_host, xrep_port))
 
         # Socket facing services
         backend = context.socket(zmq.REQ)
-        backend.bind("tcp://%s:%d" % (host, xreq_port))
+        backend.bind("tcp://%s:%d" % (args.backend_host, xreq_port))
 
         reader = Reader(msg_queue, frontend)
         reader.start()
@@ -76,7 +77,6 @@ def main():
 
         while True:
             continue
-
 
     except Exception, e:
         print e
