@@ -5,7 +5,7 @@ Features:
 ---------
 
 * This project aims to enable notifications on local machine when using IRSSI client remotely.
-* Based on ZeroMQ (...actually started it to see how zmq works :smile: )
+* Based on ZeroMQ
 * Heavily based on irssi-libnotify: http://code.google.com/p/irssi-libnotify
 
 Dependencies:
@@ -33,17 +33,17 @@ Copy the modified notify.pl on irssi scripts folder and run:
 ```
     /load perl
     /script load notify.pl
-    /set notify_remote_host remote_hostname
-    /set notify_remote_port port
+    /set notify_remote_host local_interface
+    /set notify_remote_port local_port
 ```
 How to use:
 -----------
-Initialize the ZeroMQ device on the remote machine:
+Initialize the ZeroMQ device on the remote machine (e.g 127.0.0.1 for local interface, public IP for the public interface, 5559, 5560 ports for connections):
 ```   
-    nohup irssi-mq remote_hostname xrep_port xreq_port &
+    nohup irssi-mq local_interface public_interface rep_port req_port &
 ```
 
 Run on your local machine the notifications server:
 ```   
-    nohup irssi-notify-server remote_hostname xreq_port &
+    nohup irssi-notify-server remote_hostname req_port &
 ```
