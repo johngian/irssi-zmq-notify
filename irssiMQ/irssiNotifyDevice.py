@@ -7,6 +7,7 @@ import Queue
 class Reader(threading.Thread):
 
     def __init__(self, queue, socket):
+        self.daemon = True
         threading.Thread.__init__(self)
         self.queue = queue
         self.socket = socket
@@ -24,6 +25,7 @@ class Reader(threading.Thread):
 class Writer(threading.Thread):
 
     def __init__(self, queue, socket):
+        self.daemon = True
         threading.Thread.__init__(self)
         self.queue = queue
         self.socket = socket
@@ -61,6 +63,7 @@ def main():
         context = zmq.Context()
         xrep_port = args.xrep_port
         xreq_port = args.xreq_port
+
         # Socket facing clients
         frontend = context.socket(zmq.REP)
         frontend.bind("tcp://%s:%d" % (args.frontend_host, xrep_port))
