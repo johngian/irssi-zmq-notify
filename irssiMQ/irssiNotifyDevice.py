@@ -6,11 +6,13 @@ import Queue
 
 class Reader(threading.Thread):
 
-    def __init__(self, queue, socket):
-        self.daemon = True
+    def __init__(self, queue, port, host):
         threading.Thread.__init__(self)
         self.queue = queue
-        self.socket = socket
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.REP)
+        self.socket.bind("tcp://%s:%d" % (host, port))
+
 
     def run(self):
         """Recv messages from frontend."""
@@ -24,11 +26,13 @@ class Reader(threading.Thread):
 
 class Writer(threading.Thread):
 
-    def __init__(self, queue, socket):
-        self.daemon = True
+    def __init__(self, queue, port, host):
         threading.Thread.__init__(self)
         self.queue = queue
-        self.socket = socket
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.REQ)
+        self.socket.bind("tcp://%s:%d" % (host, port))
+
 
     def run(self):
         """Send messages to backend."""
@@ -60,34 +64,22 @@ def main():
     msg_queue = Queue.Queue()
 
     try:
-        context = zmq.Context()
         xrep_port = args.xrep_port
         xreq_port = args.xreq_port
 
-        # Socket facing clients
-        frontend = context.socket(zmq.REP)
-        frontend.bind("tcp://%s:%d" % (args.frontend_host, xrep_port))
-
-        # Socket facing services
-        backend = context.socket(zmq.REQ)
-        backend.bind("tcp://%s:%d" % (args.backend_host, xreq_port))
-
-        reader = Reader(msg_queue, frontend)
+        reader = Reader(msg_queue, xrep_port, args.frontend_host)
         reader.start()
         
-        writer = Writer(msg_queue, backend)
+        writer = Writer(msg_queue, xreq_port, args.backend_host)
         writer.start()
-
-        while True:
-            continue
+        
+        reader.join()
+        writer.join()
 
     except Exception, e:
         print e
         print "Bringing down ZMQ device..."
-    finally:
-        frontend.close()
-        backend.close()
-        context.term()
+
 
 if __name__ == "__main__":
 
